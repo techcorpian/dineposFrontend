@@ -41,9 +41,14 @@ const itemsSlice = createSlice({
       localStorage.setItem('items', JSON.stringify(state.items));
       
     },
+    clearItems(state) {
+      state.items = []; // Reset the items to an empty array
+      // Optionally clear localStorage as well
+      localStorage.removeItem('items');
+    },
   },
 });
 
-export const { addProduct, editItem, deleteItem } = itemsSlice.actions;
+export const { addProduct, editItem, deleteItem, clearItems } = itemsSlice.actions;
 
 export default itemsSlice.reducer;

@@ -4,7 +4,10 @@ import { FiEdit2 } from "react-icons/fi";
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../redux/store';
-import { editItem, deleteItem } from '../redux/slices/itemsSlice';
+import { editItem, deleteItem, clearItems } from '../redux/slices/itemsSlice';
+
+import axios from 'axios'
+import Modal from '../UIElements/Modal'
 
 interface Item {
     name: string;
@@ -18,6 +21,8 @@ const RightPanel: React.FC = () => {
 
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [newQuantities, setNewQuantities] = useState<{ [key: number]: number | null }>({});
+    const [orderId, setOrderId] = useState<string | null>('');
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
 
     const handleEditItem = (index: number, newQuantity: number) => {
         dispatch(editItem({ index, newQuantity }));
@@ -26,7 +31,7 @@ const RightPanel: React.FC = () => {
     };
 
     const handleDeleteItem = (index: number) => {
-        dispatch(deleteItem( index ));
+        dispatch(deleteItem(index));
         console.log(index)
     };
 
@@ -45,11 +50,125 @@ const RightPanel: React.FC = () => {
 
     const totalTax = totalAmount * 0.05;
 
+    const fetchOrderId = async () => {
+        const response = await axios.get<number | null>('http://localhost:5001/api/orders/newOrderId');
+        let newOrderId = response.data.orderId + 1
+        setOrderId(newOrderId);
+    };
+
+    useEffect(() => {
+        fetchOrderId();
+    }, []);
+
+    // console.log(items)
+
+    const handleSummaryOpen = () => {
+        setModalOpen(true);
+    }
+
+    const handleSummaryClose = () => {
+        setModalOpen(false);
+    }
+
+    const handleProceed = async () => {
+        try {
+            // Format the orderData according to your schema
+            const orderData = {
+                orderId,  // Ensure that orderId is correctly calculated and passed
+                orderList: items.map(item => ({
+                    itemName: item.name,
+                    itemQty: item.quantity,
+                    itemDesc: item.description,  // Ensure description is available in item
+                    itemPrice: item.price,
+                })),
+                subTotal: totalAmount - totalTax,
+                tax: totalTax,
+                payableAmount: totalAmount,
+                paymentMode: selectedPayment,  // You can change this based on actual payment method
+            };
+
+            // console.log(orderData);
+
+            // Send the POST request to create the order
+            const response = await axios.post('http://localhost:5001/api/orders', orderData);
+
+            // Success response handling
+            console.log('Order created successfully:', response.data);
+            dispatch(clearItems());
+            fetchOrderId();
+            setModalOpen(false)
+            alert('Order created successfully!');
+        } catch (error) {
+            // Error handling
+            console.error('Error creating order:', error);
+            alert('Failed to create order. Please try again.');
+        }
+    };
+
+    // State to store the selected value
+    const [selectedPayment, setSelectedPayment] = useState("cash");
+
+    // Handle change event
+    const handleChange = (event) => {
+        setSelectedPayment(event.target.value); // Update the state with the selected value
+    };
+
     return (
         <div className='p-3 w-full'>
+            {modalOpen ?
+                <Modal onClose={handleSummaryClose}>
+                    <>
+                        <div className="text-xl font-bold text-gray-800 pb-6">Payment Summary</div>
+                        {items.length === 0 ? (
+                            <div className="text-center text-gray-600 border py-2">Please Add Any Items!</div>
+                        ) : (
+                            <div className="flex flex-row justify-between gap-4">
+                                <ul className="bg-gray-100 p-4 w-full rounded-lg">
+                                    <div className="font-semibold pb-4">Transaction Details</div>
+                                    {items.map((item, index) => (
+                                        <div key={index} className="pb-4 text-sm">
+                                            <div className="flex justify-between">
+                                                <div>{item.name}</div>
+                                                <div>x{item.quantity}</div>
+                                            </div>
+                                            <div>${item.price}</div>
+                                        </div>
+                                    ))}
+                                    <div className="flex justify-between pb-4">
+                                        <li className="text-sm">Items ({items.length})</li>
+                                        <li className="text-sm">${totalAmount - totalTax}</li>
+                                    </div>
+                                    <div className="flex justify-between pb-6">
+                                        <li className="text-sm">Tax</li>
+                                        <li className="text-sm">${totalTax}</li>
+                                    </div>
+                                    <div className="flex justify-between font-semibold">
+                                        <li className="text-sm">Total</li>
+                                        <li className="text-sm">${totalAmount}</li>
+                                    </div>
+                                </ul>
+                                <ul className="w-full flex flex-col justify-between">
+                                    <div>
+                                        <div className="text-sm text-gray-500 pb-4">Order #{orderId} / Dine In</div>
+                                        <select name="" id="" className='w-full border p-2 px-2 focus:outline-none' value={selectedPayment} onChange={handleChange}>
+                                            <option value="cash">Cash</option>
+                                            <option value="online payment">Online Payment</option>
+                                            <option value="upi payment">UPI Payment</option>
+                                        </select>
+                                    </div>
+                                    <div className='text-center py-2 border border-green-600 text-green-600 hover:bg-green-600 hover:text-white cursor-pointer' onClick={handleProceed}>Complete Payment</div>
+                                </ul>
+                            </div>
+                        )}
+                    </>
+                </Modal>
+
+                : ''}
             <div className='border h-full rounded-lg shadow-xl bg-white px-2 py-2'>
                 <div className='flex flex-col justify-between h-full'>
+
                     <ul>
+                        <div className='pb-4 px-2 pt-2 font-bold'>Order <span className='text-blue-500 '>#{orderId}</span></div>
                         {items.map((item, index) => (
                             <li
                                 key={index}
@@ -142,6 +261,7 @@ const RightPanel: React.FC = () => {
                             <Link
                                 className="border border-green-600 text-green-600 hover:bg-green-600 hover:text-white p-3 w-full text-center mx-1 rounded-md"
                                 to="#"
+                                onClick={handleSummaryOpen}
                             >
                                 Proceed
                             </Link>
