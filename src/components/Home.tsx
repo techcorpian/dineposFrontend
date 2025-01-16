@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../redux/store';
-import { addProduct, editItem, deleteItem } from '../redux/slices/itemsSlice';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { addProduct } from '../redux/slices/itemsSlice';
 
 import { IoFastFoodSharp } from "react-icons/io5";
 import axios from 'axios'

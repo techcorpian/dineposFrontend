@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 
 interface Props {
     onClose: () => void;
+    children: ReactNode; // Ensure `children` is explicitly typed
 }
 
 const OrderViewModal: React.FC<Props> = ({ onClose, children }) => {

@@ -4,6 +4,7 @@ interface Item {
   name: string;
   price: number;
   quantity: number;
+  description: string;
 }
 
 interface ItemsState {
@@ -12,6 +13,10 @@ interface ItemsState {
 
 const initialState: ItemsState = {
   items: JSON.parse(localStorage.getItem('items') || '[]'), // Initialize from localStorage
+};
+
+const saveToLocalStorage = (items: Item[]) => {
+  localStorage.setItem('items', JSON.stringify(items));
 };
 
 const itemsSlice = createSlice({
@@ -24,27 +29,27 @@ const itemsSlice = createSlice({
       if (existingItem) {
         existingItem.quantity += 1;
       } else {
-        state.items.push({ name, price, quantity: 1 });
+        state.items.push({ name, price, quantity: 1, description: '' }); // Assuming description is optional
       }
-      localStorage.setItem('items', JSON.stringify(state.items));
+      saveToLocalStorage(state.items);
     },
     editItem(state, action: PayloadAction<{ index: number; newQuantity: number }>) {
       const { index, newQuantity } = action.payload;
       if (state.items[index]) {
         state.items[index].quantity = newQuantity;
-        localStorage.setItem('items', JSON.stringify(state.items));
+        saveToLocalStorage(state.items);
       }
     },
     deleteItem(state, action: PayloadAction<number>) {
-      state.items.splice(action.payload, 1);
-      console.log(action.payload);
-      localStorage.setItem('items', JSON.stringify(state.items));
-      
+      const index = action.payload;
+      if (state.items[index]) {
+        state.items.splice(index, 1);
+        saveToLocalStorage(state.items);
+      }
     },
     clearItems(state) {
       state.items = []; // Reset the items to an empty array
-      // Optionally clear localStorage as well
-      localStorage.removeItem('items');
+      localStorage.removeItem('items'); // Clear localStorage
     },
   },
 });

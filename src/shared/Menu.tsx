@@ -7,8 +7,8 @@ import { FiShoppingBag } from "react-icons/fi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../redux/store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
 import { logout } from '../redux/slices/authSlice';
 
 

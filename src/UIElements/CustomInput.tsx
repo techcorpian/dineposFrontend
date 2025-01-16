@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import { useState, FC } from 'react';
 
-const CustomInput = ({ type, label, id, value, setValue }) => {
-  const [focused, setFocused] = useState(false);
+interface CustomInputProps {
+  type: string;
+  label: string;
+  id: string;
+  value: string;
+  setValue: (value: string) => void;
+}
 
-  const handleFocus = () => setFocused(true);
-  const handleBlur = () => {
+const CustomInput: FC<CustomInputProps> = ({ type, label, id, value, setValue }) => {
+  const [focused, setFocused] = useState<boolean>(false);
+
+  const handleFocus = (): void => setFocused(true);
+  const handleBlur = (): void => {
     if (value === '') {
       setFocused(false);
     }
@@ -16,7 +24,7 @@ const CustomInput = ({ type, label, id, value, setValue }) => {
         type={type}
         id={id}
         value={value}
-        onChange={(e) => setValue(e.target.value)} 
+        onChange={(e) => setValue(e.target.value)}
         onFocus={handleFocus}
         onBlur={handleBlur}
         className={`block w-full px-4 py-3 text-lg bg-transparent border border-gray-500 rounded ${

@@ -10,12 +10,6 @@ import Payment from '../UIElements/RazorButton';
 import axios from 'axios'
 import Modal from '../UIElements/Modal'
 
-interface Item {
-    name: string;
-    price: number;
-    quantity: number;
-}
-
 const RightPanel: React.FC = () => {
     const items = useSelector((state: RootState) => state.items.items);
     const dispatch = useDispatch<AppDispatch>();
@@ -26,7 +20,7 @@ const RightPanel: React.FC = () => {
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [selectedPayment, setSelectedPayment] = useState("cash");
 
-    const handleChange = (e) => {
+    const handleChange = (e:any) => {
         setSelectedPayment(e.target.value);
     };
 
@@ -57,9 +51,8 @@ const RightPanel: React.FC = () => {
     const totalTax = totalAmount * 0.05;
 
     const fetchOrderId = async () => {
-        const response = await axios.get<number | null>('http://localhost:5001/api/orders/newOrderId');
-        let newOrderId = response.data.orderId + 1
-        setOrderId(newOrderId);
+        const response = await axios.get<any | null>('http://localhost:5001/api/orders/newOrderId');
+        setOrderId((response.data?.orderId ?? 0) + 1);
     };
 
     useEffect(() => {
@@ -76,7 +69,7 @@ const RightPanel: React.FC = () => {
         setModalOpen(false);
     }
 
-    const handleProceed = async (razorpay_order_id : string = null, razorpay_payment_id : string = null) => {
+    const handleProceed = async (razorpay_order_id : string | null = null, razorpay_payment_id : string | null = null) => {
         try {
             // Format the orderData according to your schema
             const orderData = {
@@ -177,7 +170,7 @@ const RightPanel: React.FC = () => {
                                         </div>
                                     )}
 
-                                    {selectedPayment === "upi payment" && <Payment amount={totalAmount} handleProceed={handleProceed}/>}
+                                    {selectedPayment === "upi payment" && <Payment amount={totalAmount.toString()} handleProceed={handleProceed}/>}
                                 </ul>
                             </div>
                         )}
