@@ -38,7 +38,8 @@ const Payment: React.FC<Props> = ({ amount, handleProceed }) => {
   const handlePayment = async () => {
     try {
       // Create an order on the backend
-      const { data: order } = await axios.post('http://localhost:5001/api/orders/createOrderByUPI', {
+      const api = import.meta.env.VITE_API
+      const { data: order } = await axios.post(`${api}/api/orders/createOrderByUPI`, {
         amount: parseInt(amount, 10), // Convert amount to number
         currency: 'INR',
       });

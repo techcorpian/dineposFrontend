@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+const api = import.meta.env.VITE_API
+
 interface AuthState {
   token: string | null;
   loading: boolean;
@@ -14,7 +16,7 @@ const initialState: AuthState = {
 };
 
 export const login = createAsyncThunk('auth/login', async (credentials: { email: string; password: string }) => {
-  const response = await axios.post('http://localhost:5001/api/auth/login', credentials);
+  const response = await axios.post(`${api}/api/auth/login`, credentials);
   return response.data.token;
 });
 

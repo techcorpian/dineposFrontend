@@ -11,6 +11,7 @@ import axios from 'axios'
 import Modal from '../UIElements/Modal'
 
 const RightPanel: React.FC = () => {
+    const api = import.meta.env.VITE_API
     const items = useSelector((state: RootState) => state.items.items);
     const dispatch = useDispatch<AppDispatch>();
 
@@ -51,7 +52,7 @@ const RightPanel: React.FC = () => {
     const totalTax = totalAmount * 0.05;
 
     const fetchOrderId = async () => {
-        const response = await axios.get<any | null>('http://localhost:5001/api/orders/newOrderId');
+        const response = await axios.get<any | null>(`${api}/api/orders/newOrderId`);
         setOrderId((response.data?.orderId ?? 0) + 1);
     };
 
@@ -92,7 +93,7 @@ const RightPanel: React.FC = () => {
             // console.log(orderData);
 
             // Send the POST request to create the order
-            const response = await axios.post('http://localhost:5001/api/orders', orderData);
+            const response = await axios.post(`${api}/api/orders`, orderData);
 
             // Success response handling
             console.log('Order created successfully:', response.data);

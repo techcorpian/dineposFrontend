@@ -14,7 +14,7 @@ export interface Item {
 }
 
 const Home: React.FC = () => {
-
+    const api = import.meta.env.VITE_API
     const dispatch = useDispatch<AppDispatch>();
     const [items, setItems] = useState<Item[]>([]);
 
@@ -24,7 +24,7 @@ const Home: React.FC = () => {
     };
 
     const fetchItems = async () => {
-        const response = await axios.get<Item[]>('http://localhost:5001/api/items');
+        const response = await axios.get<Item[]>(`${api}/api/items`);
         setItems(response.data);
     };
 

@@ -29,13 +29,14 @@ interface Item {
 }
 
 const Orders: React.FC = () => {
+  const api = import.meta.env.VITE_API
   const [orders, setOrders] = useState<Item[]>([]);
   const [openView, setOpenView] = useState<boolean>(false);
   const [orderViewData, setOrderViewData] = useState<OrderDetails | null>(null);
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get<Item[]>('http://localhost:5001/api/orders');
+      const response = await axios.get<Item[]>(`${api}/api/orders`);
       setOrders(response.data);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -44,7 +45,7 @@ const Orders: React.FC = () => {
 
   const fetchOrdersById = async (id: string) => {
     try {
-      const response = await axios.get<OrderDetails>(`http://localhost:5001/api/orders/getOrderById/${id}`);
+      const response = await axios.get<OrderDetails>(`${api}/api/orders/getOrderById/${id}`);
       setOrderViewData(response.data);
     } catch (error) {
       console.error('Error fetching order details:', error);
