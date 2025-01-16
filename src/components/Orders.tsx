@@ -82,6 +82,8 @@ const Orders: React.FC = () => {
                 <p className='flex justify-between text-gray-700'><strong>Tax:</strong> ${orderViewData.tax}</p>
                 <p className='flex justify-between pb-4 text-gray-700'><strong>Grand Total:</strong> ${orderViewData.payableAmount}</p>
                 <p className='flex justify-between text-gray-700'><strong>Mode Of Payment</strong> {orderViewData.paymentMode}</p>
+                {orderViewData.razorpay_order_id ? <p className='flex justify-between text-gray-700'><strong>UPI Order Id</strong> {orderViewData.razorpay_order_id}</p> : ''}
+                {orderViewData.razorpay_payment_id ? <p className='flex justify-between text-gray-700'><strong>UPI Payment Id</strong> {orderViewData.razorpay_payment_id}</p> : ''}
               </div>
             ) : (
               <p>Loading order details...</p>

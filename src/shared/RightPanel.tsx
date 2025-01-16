@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../redux/store';
 import { editItem, deleteItem, clearItems } from '../redux/slices/itemsSlice';
+import Payment from '../UIElements/RazorButton';
 
 import axios from 'axios'
 import Modal from '../UIElements/Modal'
@@ -23,6 +24,11 @@ const RightPanel: React.FC = () => {
     const [newQuantities, setNewQuantities] = useState<{ [key: number]: number | null }>({});
     const [orderId, setOrderId] = useState<string | null>('');
     const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [selectedPayment, setSelectedPayment] = useState("cash");
+
+    const handleChange = (e) => {
+        setSelectedPayment(e.target.value);
+    };
 
     const handleEditItem = (index: number, newQuantity: number) => {
         dispatch(editItem({ index, newQuantity }));
@@ -70,7 +76,7 @@ const RightPanel: React.FC = () => {
         setModalOpen(false);
     }
 
-    const handleProceed = async () => {
+    const handleProceed = async (razorpay_order_id : string = null, razorpay_payment_id : string = null) => {
         try {
             // Format the orderData according to your schema
             const orderData = {
@@ -85,6 +91,9 @@ const RightPanel: React.FC = () => {
                 tax: totalTax,
                 payableAmount: totalAmount,
                 paymentMode: selectedPayment,  // You can change this based on actual payment method
+                    razorpay_order_id: razorpay_order_id || null,  // Default to null if no razorpay_order_id
+                    razorpay_payment_id: razorpay_payment_id || null,  // Default to null if no razorpay_payment_id
+
             };
 
             // console.log(orderData);
@@ -103,14 +112,6 @@ const RightPanel: React.FC = () => {
             console.error('Error creating order:', error);
             alert('Failed to create order. Please try again.');
         }
-    };
-
-    // State to store the selected value
-    const [selectedPayment, setSelectedPayment] = useState("cash");
-
-    // Handle change event
-    const handleChange = (event) => {
-        setSelectedPayment(event.target.value); // Update the state with the selected value
     };
 
     return (
@@ -148,15 +149,35 @@ const RightPanel: React.FC = () => {
                                     </div>
                                 </ul>
                                 <ul className="w-full flex flex-col justify-between">
+
+
+
+
                                     <div>
                                         <div className="text-sm text-gray-500 pb-4">Order #{orderId} / Dine In</div>
-                                        <select name="" id="" className='w-full border p-2 px-2 focus:outline-none' value={selectedPayment} onChange={handleChange}>
+                                        <select
+                                            name="paymentMethod"
+                                            id="paymentMethod"
+                                            className="w-full border p-2 px-2 focus:outline-none"
+                                            value={selectedPayment}
+                                            onChange={handleChange}
+                                        >
                                             <option value="cash">Cash</option>
-                                            <option value="online payment">Online Payment</option>
+                                            {/* <option value="online payment">Online Payment</option> */}
                                             <option value="upi payment">UPI Payment</option>
                                         </select>
                                     </div>
-                                    <div className='text-center py-2 border border-green-600 text-green-600 hover:bg-green-600 hover:text-white cursor-pointer' onClick={handleProceed}>Complete Payment</div>
+
+                                    {selectedPayment === "cash" && (
+                                        <div
+                                            className="text-center py-2 border border-green-600 text-green-600 hover:bg-green-600 hover:text-white cursor-pointer"
+                                            onClick={() => handleProceed()}
+                                        >
+                                            Pay With Cash
+                                        </div>
+                                    )}
+
+                                    {selectedPayment === "upi payment" && <Payment amount={totalAmount} handleProceed={handleProceed}/>}
                                 </ul>
                             </div>
                         )}
