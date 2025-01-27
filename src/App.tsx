@@ -1,7 +1,5 @@
 // src/App.tsx
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import store from './redux/store';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
@@ -15,8 +13,7 @@ import ProtectedRoute from './shared/ProtectedRoute';
 
 function App() {
   return (
-    <Provider store={store}>
-      <Router>
+
         <Routes>
           {/* Auth Layout */}
           <Route element={<AuthLayout />}>
@@ -35,8 +32,6 @@ function App() {
             </Route>
           </Route>
         </Routes>
-      </Router>
-    </Provider>
   );
 }
 
