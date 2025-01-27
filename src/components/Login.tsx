@@ -67,7 +67,8 @@ const Login: React.FC = () => {
           <div className='md:text-left text-center'>Created By Mushthaq Ameen.</div>
           </div>
           <div className='md:block hidden flex flex-col justify-between p-6 px-8 rounded-lg w-1/2 h-full bg-black/80'>
-            <div className='text-white'></div>
+            <div className='text-white'>Demo Username : testuser@example.com</div>
+            <div className='text-white'>Demo Password : testpassword</div>
           </div>
         </div>
 
